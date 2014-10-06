@@ -14,6 +14,9 @@ strongly recommended chat about it using our [mailing list](http://groups.google
 
 Extensive contribution guidelines are available online: LINK HERE(TODO).
 
-You don't need sign something like "Contributor License Agreement" but sending a patch of code
-in one pull-request or using any other method you are accepting that you code are licensed by
-AGPL v3.0. You can see the complete license on `LICENSE` file on the root of repository.
+## License ##
+
+Every code patch accepted in taiga codebase it is licensed under AGPL v3.0. You should care
+about it and not include code that can not be licensed under that license.
+
+You can see the complete license on `LICENSE` file on the root of repository.
