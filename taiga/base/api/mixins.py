@@ -23,6 +23,8 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.db import transaction as tx
+from django.db import IntegrityError
+from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -159,14 +161,17 @@ class UpdateModelMixin(object):
             # so we have to handle eventual errors.
             return Response(err.message_dict, status=status.HTTP_400_BAD_REQUEST)
 
-        if self.object is None:
-            self.object = serializer.save(force_insert=True)
-            self.post_save(self.object, created=True)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        try:
+            if self.object is None:
+                self.object = serializer.save(force_insert=True)
+                self.post_save(self.object, created=True)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        self.object = serializer.save(force_update=True)
-        self.post_save(self.object, created=False)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            self.object = serializer.save(force_update=True)
+            self.post_save(self.object, created=False)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except IntegrityError as exc:
+            return Response({'_error_message': _("Duplication error")}, status=status.HTTP_400_BAD_REQUEST)
 
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True
